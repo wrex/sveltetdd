@@ -1,11 +1,11 @@
 <script>
   import axios from 'axios';
-
+  
   let username, email, password, confPw;
   let requestPromise;
   let signUpSuccess = false;
   $: disabled = (password) ? password !== confPw : true; 
-
+  
   const submit = () => {
     disabled = true;
     requestPromise = axios.post('/api/1.0/users', { username, email, password });
@@ -15,10 +15,11 @@
       signUpSuccess = false;
     });
   }
-
+  
 </script>
 
-<div class="col-lg-6 offset-lg-3 col-md-8 offset-md-2">
+{#if !signUpSuccess}
+<div class="col-lg-6 offset-lg-3 col-md-8 offset-md-2" data-testid="sign-up-form">
   <form class="card mt-5">
     <div class="card-header">
       <h1 class="text-center">Sign Up</h1>
@@ -60,7 +61,7 @@
       </div>
     </div>
   </form>
-  {#if signUpSuccess}
-    <div class="alert alert-success" role="alert">Please check your email to activate your account.</div>
-  {/if}
 </div>
+{:else}
+  <div class="alert alert-success" role="alert">Please check your email to activate your account.</div>
+{/if}

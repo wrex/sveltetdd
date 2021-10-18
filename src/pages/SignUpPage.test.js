@@ -207,5 +207,24 @@ describe("Sign Up page", () => {
       );
       expect(message).not.toBeInTheDocument();
     });
+
+    it("hides form after successful sign-up", async () => {
+      const server = setupServer(
+        rest.post("/api/1.0/users", (req, res, ctx) => {
+          return res(ctx.status(200));
+        })
+      );
+
+      server.listen();
+      await renderAndFillForm();
+
+      const button = screen.getByRole("button", { name: "Sign Up" });
+      await userEvent.click(button);
+
+      const form = screen.getByTestId("sign-up-form");
+      await waitFor(() => {
+        expect(form).not.toBeInTheDocument();
+      });
+    });
   });
 });
