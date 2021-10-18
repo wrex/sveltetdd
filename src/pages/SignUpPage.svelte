@@ -63,5 +63,5 @@
   </form>
 </div>
 {:else}
-  <div class="alert alert-success" role="alert">Please check your email to activate your account.</div>
+  <div class="alert alert-success mt-3" role="alert">Please check your email to activate your account.</div>
 {/if}
