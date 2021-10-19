@@ -6,8 +6,8 @@ import SignUpPage from "./SignUpPage.svelte";
 import { render, screen, waitFor } from "@testing-library/svelte";
 import userEvent from "@testing-library/user-event";
 import "@testing-library/jest-dom";
-import { setupServer } from "msw/node";
 import { rest } from "msw";
+import { setupServer } from "msw/node";
 
 describe("Sign Up page", () => {
   describe("layout", () => {
@@ -79,12 +79,12 @@ describe("Sign Up page", () => {
 
     beforeAll(() => server.listen());
 
-    afterAll(() => server.close());
-
-    beforeEach(() => {
+    afterEach(() => {
       counter = 0;
       server.resetHandlers();
     });
+
+    afterAll(() => server.close());
 
     let button;
     const renderAndFillForm = async () => {
@@ -184,16 +184,16 @@ describe("Sign Up page", () => {
 
       await userEvent.click(button);
 
-      // Instructor removes this line, but dont we need to wait for **something**?
-      await server.close();
-
       const message = screen.queryByText(
         "Please check your email to activate your account."
       );
-      expect(message).not.toBeInTheDocument();
+
+      await waitFor(() => {
+        expect(message).not.toBeInTheDocument();
+      });
     });
 
-    xit("hides form after successful sign-up", async () => {
+    it("hides form after successful sign-up", async () => {
       await renderAndFillForm();
 
       await userEvent.click(button);
@@ -202,6 +202,36 @@ describe("Sign Up page", () => {
       await waitFor(() => {
         expect(form).not.toBeInTheDocument();
       });
+    });
+
+    it("displays invalid username message for invalid username", async () => {
+      server.use(
+        rest.post("/api/1.0/users", (req, res, ctx) => {
+          return res(
+            ctx.status(400),
+            ctx.json({
+              validationErrors: {
+                username: "Username cannot be null",
+              },
+            })
+          );
+        })
+      );
+
+      await renderAndFillForm();
+
+      await userEvent.click(button);
+
+      const validationError = await screen.findByText(
+        "Username cannot be null"
+      );
+      expect(validationError).toBeInTheDocument();
+    });
+
+    it("does not display invalid username message prior to form submission", async () => {
+      await renderAndFillForm();
+      const validationAlert = screen.queryByRole("alert");
+      expect(validationAlert).not.toBeInTheDocument();
     });
   });
 });
