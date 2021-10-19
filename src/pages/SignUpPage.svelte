@@ -9,7 +9,6 @@
   let errors = {};
 
   const submit = () => {
-    disabled = true;
     requestInProgress = true;
     axios.post('/api/1.0/users', { username, email, password })
       .then(() => {
@@ -19,6 +18,7 @@
         if(error.response.status === 400) {
           errors = error.response.data.validationErrors;
         }
+        requestInProgress = false;
       });
   }
   
@@ -56,7 +56,7 @@
       </div>
     
       <div class="text-center">
-        <button {disabled} class="btn btn-primary" on:click|preventDefault={submit}>
+        <button disabled={disabled || requestInProgress} class="btn btn-primary" on:click|preventDefault={submit}>
           {#if requestInProgress }
             <span class="spinner-border spinner-border-sm" 
             data-testid="spinner"
