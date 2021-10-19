@@ -2,18 +2,20 @@
   import axios from 'axios';
   
   let username, email, password, confPw;
-  let requestPromise;
+  let requestInProgress = false;
   let signUpSuccess = false;
   $: disabled = (password) ? password !== confPw : true; 
   
   const submit = () => {
     disabled = true;
-    requestPromise = axios.post('/api/1.0/users', { username, email, password });
-    requestPromise.then(() => {
-      signUpSuccess = true;
-    }).catch((error) => {
-      signUpSuccess = false;
-    });
+    requestInProgress = true;
+    axios.post('/api/1.0/users', { username, email, password })
+      .then(() => {
+        signUpSuccess = true;
+      })
+      .catch((error) => {
+        // do what?
+      });
   }
   
 </script>
@@ -48,14 +50,12 @@
     
       <div class="text-center">
         <button {disabled} class="btn btn-primary" on:click|preventDefault={submit}>
-          {#await requestPromise }
+          {#if requestInProgress }
             <span class="spinner-border spinner-border-sm" 
             data-testid="spinner"
             role="status" 
             aria-hidden="true"></span >
-          {:catch error}
-            &nbsp;
-          {/await}
+          {/if}
           Sign Up
         </button>
       </div>
