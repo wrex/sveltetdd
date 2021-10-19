@@ -1,5 +1,6 @@
 <script>
   import axios from 'axios';
+  import Input from '../components/Input.svelte';
   
   let username, email, password, confPw;
   let requestInProgress = false;
@@ -32,13 +33,14 @@
     </div>
   
     <div class="card-body">
-      <div class="form-group">
+      <Input id="username" label="Username" validationMsg={errors.username} bind:value={username} />
+      <!-- <div class="form-group">
         <label for="username">Username</label>
         <input id="username" class="form-control" bind:value={username} />
         {#if errors.username}
           <span role="alert">{errors.username}</span>
         {/if}
-      </div>
+      </div> -->
     
       <div class="form-group">
         <label for="email">Email</label>
