@@ -5,7 +5,6 @@
 import SignUpPage from "./SignUpPage.svelte";
 import { render, screen, waitFor } from "@testing-library/svelte";
 import userEvent from "@testing-library/user-event";
-import "@testing-library/jest-dom";
 import { rest } from "msw";
 import { setupServer } from "msw/node";
 
@@ -227,12 +226,6 @@ describe("Sign Up page", () => {
         "Username cannot be null"
       );
       expect(validationError).toBeInTheDocument();
-    });
-
-    it("does not display invalid username message prior to form submission", async () => {
-      await renderAndFillForm();
-      const validationAlert = screen.queryByRole("alert");
-      expect(validationAlert).not.toBeInTheDocument();
     });
 
     it("hides spinner after response received from server", async () => {
