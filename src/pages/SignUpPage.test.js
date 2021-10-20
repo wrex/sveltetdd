@@ -85,13 +85,13 @@ describe("Sign Up page", () => {
 
     afterAll(() => server.close());
 
-    let button;
+    let button, pwInput, confPwInput;
     const renderAndFillForm = async () => {
       render(SignUpPage);
       const usernameInput = screen.getByLabelText("Username");
       const emailInput = screen.getByLabelText("Email");
-      const pwInput = screen.getByLabelText("Password");
-      const confPwInput = screen.getByLabelText("Confirm password");
+      pwInput = screen.getByLabelText("Password");
+      confPwInput = screen.getByLabelText("Confirm password");
       button = screen.getByRole("button", { name: "Sign Up" });
 
       await userEvent.type(usernameInput, "Joe Blow");
@@ -266,6 +266,20 @@ describe("Sign Up page", () => {
       );
 
       expect(button).toBeEnabled();
+    });
+
+    it("displays client-side validation error on password mismatch", async () => {
+      await renderAndFillForm();
+      await userEvent.type(pwInput, "abc123");
+      await userEvent.type(confPwInput, "def456");
+      const validationError = await screen.findByText("Password mismatch");
+      expect(validationError).toBeInTheDocument();
+    });
+
+    it("does not display client-side validation error initially", () => {
+      render(SignUpPage);
+      const validationError = screen.queryByText("Password mismatch");
+      expect(validationError).not.toBeInTheDocument();
     });
   });
 });

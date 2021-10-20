@@ -5,7 +5,8 @@
   let username, email, password, confPw;
   let requestInProgress = false;
   let signUpSuccess = false;
-  $: disabled = (password) ? password !== confPw : true; 
+  $: pwMismatch = password !== confPw;
+  $: disabled = (password) ? pwMismatch : true; 
   
   let errors = {};
 
@@ -36,17 +37,7 @@
       <Input id="username" label="Username" validationMsg={errors.username} bind:value={username} />
       <Input id="email" label="Email" validationMsg={errors.email} bind:value={email} />
       <Input id="password" label="Password" type="password" validationMsg={errors.password} bind:value={password} />
-    
-
-      <!-- <div class="form-group">
-        <label for="password">Password</label>
-        <input id="password" class="form-control" type="password" bind:value={password} />
-      </div> -->
-    
-      <div class="form-group">
-        <label for="confirm-password">Confirm password</label>
-        <input id="confirm-password" class="form-control" type="password" bind:value={confPw} />
-      </div>
+      <Input id="confirm-password" label="Confirm password" type="password" validationMsg={pwMismatch ? "Password mismatch" : ""} bind:value={confPw} />
     
       <div class="text-center">
         <button disabled={disabled || requestInProgress} class="btn btn-primary" on:click|preventDefault={submit}>
