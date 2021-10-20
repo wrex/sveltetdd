@@ -7,6 +7,21 @@
   let signUpSuccess = false;
   $: pwMismatch = password !== confPw;
   $: disabled = (password) ? pwMismatch : true; 
+
+  $: {
+    if(username){};
+    errors.username = "";
+  }
+  
+  $: {
+    if(email){};
+    errors.email = "";
+  }
+  
+  $: {
+    if(password){};
+    errors.password = "";
+  }
   
   let errors = {};
 

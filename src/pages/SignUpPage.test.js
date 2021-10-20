@@ -85,11 +85,11 @@ describe("Sign Up page", () => {
 
     afterAll(() => server.close());
 
-    let button, pwInput, confPwInput;
+    let button, usernameInput, emailInput, pwInput, confPwInput;
     const renderAndFillForm = async () => {
       render(SignUpPage);
-      const usernameInput = screen.getByLabelText("Username");
-      const emailInput = screen.getByLabelText("Email");
+      usernameInput = screen.getByLabelText("Username");
+      emailInput = screen.getByLabelText("Email");
       pwInput = screen.getByLabelText("Password");
       confPwInput = screen.getByLabelText("Confirm password");
       button = screen.getByRole("button", { name: "Sign Up" });
@@ -220,6 +220,7 @@ describe("Sign Up page", () => {
       field         | message
       ${"username"} | ${"Username cannot be null"}
       ${"email"}    | ${"E-mail cannot be null"}
+      ${"password"} | ${"Password cannot be null"}
     `(
       "displays '$message' for invalid '$field' field",
       async ({ field, message }) => {
@@ -281,5 +282,28 @@ describe("Sign Up page", () => {
       const validationError = screen.queryByText("Password mismatch");
       expect(validationError).not.toBeInTheDocument();
     });
+
+    it.each`
+      field         | message                      | label
+      ${"username"} | ${"Username cannot be null"} | ${"Username"}
+      ${"email"}    | ${"E-mail cannot be null"}   | ${"Email"}
+      ${"password"} | ${"Password cannot be null"} | ${"Password"}
+    `(
+      "clears client-side $field validation error upon text input",
+      async ({ field, message, label }) => {
+        server.use(returnValidationError(field, message));
+
+        // Fills valid data, but server response mocked to return error regardless
+        await renderAndFillForm();
+
+        await userEvent.click(button);
+
+        // Use validation error to know when response received
+        const validationError = await screen.findByText(message);
+        const input = screen.getByLabelText(label);
+        await userEvent.type(input, "abc123");
+        expect(validationError).not.toBeInTheDocument();
+      }
+    );
   });
 });
