@@ -34,23 +34,14 @@
   
     <div class="card-body">
       <Input id="username" label="Username" validationMsg={errors.username} bind:value={username} />
+      <Input id="email" label="Email" validationMsg={errors.email} bind:value={email} />
+      <Input id="password" label="Password" type="password" validationMsg={errors.password} bind:value={password} />
+    
+
       <!-- <div class="form-group">
-        <label for="username">Username</label>
-        <input id="username" class="form-control" bind:value={username} />
-        {#if errors.username}
-          <span role="alert">{errors.username}</span>
-        {/if}
-      </div> -->
-    
-      <div class="form-group">
-        <label for="email">Email</label>
-        <input id="email" class="form-control" bind:value={email} />
-      </div>
-    
-      <div class="form-group">
         <label for="password">Password</label>
         <input id="password" class="form-control" type="password" bind:value={password} />
-      </div>
+      </div> -->
     
       <div class="form-group">
         <label for="confirm-password">Confirm password</label>

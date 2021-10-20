@@ -1,12 +1,18 @@
 <script>
-  export let id = "", label ="", validationMsg = "", value = "";
+  import { onMount } from 'svelte';
 
-  let inputClass = validationMsg ? "form-control is-invalid" : "form-control";
+  export let id = "", label ="", validationMsg = "", value = "", type = "text";
+
+  let inputElement;
+  onMount(() => {
+    inputElement.type = type;
+  });
 </script>
 
 <div class="form-group">
   <label for={id}>{label}</label>
   <input id={id} 
+    bind:this={inputElement}
     class="form-control" 
     class:is-invalid={validationMsg}
     bind:value />

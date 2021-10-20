@@ -1,4 +1,4 @@
-/**
+/*
  * @jest-environment jsdom
  */
 
@@ -203,44 +203,40 @@ describe("Sign Up page", () => {
       });
     });
 
-    it("displays invalid username message for invalid username", async () => {
-      server.use(
-        rest.post("/api/1.0/users", (req, res, ctx) => {
-          return res(
-            ctx.status(400),
-            ctx.json({
-              validationErrors: {
-                username: "Username cannot be null",
-              },
-            })
-          );
-        })
-      );
+    const returnValidationError = (field, message) => {
+      return rest.post("/api/1.0/users", (req, res, ctx) => {
+        return res(
+          ctx.status(400),
+          ctx.json({
+            validationErrors: {
+              [field]: message,
+            },
+          })
+        );
+      });
+    };
 
-      // Fills valid data, but server response mocked to return error regardless
-      await renderAndFillForm();
+    it.each`
+      field         | message
+      ${"username"} | ${"Username cannot be null"}
+      ${"email"}    | ${"E-mail cannot be null"}
+    `(
+      "displays '$message' for invalid '$field' field",
+      async ({ field, message }) => {
+        server.use(returnValidationError(field, message));
 
-      await userEvent.click(button);
+        // Fills valid data, but server response mocked to return error regardless
+        await renderAndFillForm();
 
-      const validationError = await screen.findByText(
-        "Username cannot be null"
-      );
-      expect(validationError).toBeInTheDocument();
-    });
+        await userEvent.click(button);
+
+        const validationError = await screen.findByText(message);
+        expect(validationError).toBeInTheDocument();
+      }
+    );
 
     it("hides spinner after response received from server", async () => {
-      server.use(
-        rest.post("/api/1.0/users", (req, res, ctx) => {
-          return res(
-            ctx.status(400),
-            ctx.json({
-              validationErrors: {
-                username: "Username cannot be null",
-              },
-            })
-          );
-        })
-      );
+      server.use(returnValidationError("username", "Username cannot be null"));
 
       // Fills valid data, but server response mocked to return error regardless
       await renderAndFillForm();
@@ -257,18 +253,7 @@ describe("Sign Up page", () => {
     });
 
     it("re-enables the button after response received from server", async () => {
-      server.use(
-        rest.post("/api/1.0/users", (req, res, ctx) => {
-          return res(
-            ctx.status(400),
-            ctx.json({
-              validationErrors: {
-                username: "Username cannot be null",
-              },
-            })
-          );
-        })
-      );
+      server.use(returnValidationError("username", "Username cannot be null"));
 
       // Fills valid data, but server response mocked to return error regardless
       await renderAndFillForm();
